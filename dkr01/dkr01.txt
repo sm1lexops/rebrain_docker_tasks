@@ -1,0 +1,50 @@
+smilove@ubdocker:~$ sudo docker run -d -p 127.0.0.1:28080:80 --name rbm-dkr-01 nginx:stable
+[sudo] password for smilove: 
+Unable to find image 'nginx:stable' locally
+stable: Pulling from library/nginx
+bf5952930446: Pull complete 
+42d48e6a5bd5: Pull complete 
+3c559fefbe6a: Pull complete 
+586389d18d09: Pull complete 
+40b115ac927c: Pull complete 
+Digest: sha256:f05a6e50202cfae65d7a7da959e02c909e93ec47bc3b2c57755b76f583118e8d
+Status: Downloaded newer image for nginx:stable
+de0168e191124201f5999d369a657100ef9be84459454c28ca101105c8946ab9
+smilove@ubdocker:~$ 
+smilove@ubdocker:~$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                     NAMES
+de0168e19112        nginx:stable        "/docker-entrypoint.…"   About a minute ago   Up About a minute   127.0.0.1:28080->80/tcp   rbm-dkr-01
+smilove@ubdocker:~$ curl http://127.0.0.1:28080
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+smilove@ubdocker:~$ L
+smilove@ubdocker:~$ sudo docker rm --force rbm-dkr-01
+[sudo] password for smilove: 
+rbm-dkr-01
+smilove@ubdocker:~$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+smilove@ubdocker:~$ curl http://127.0.0.1:28080
+curl: (7) Failed to connect to 127.0.0.1 port 28080: Connection refused
