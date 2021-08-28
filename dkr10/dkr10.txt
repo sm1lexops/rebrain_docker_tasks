@@ -1,0 +1,66 @@
+root@smilove:/rebrain# cat Dockerfile
+ARG NG_VERSION=stable
+FROM nginx:$NG_VERSION
+ARG NG_VERSION
+ARG ARG_FILE=ready_steady_go
+ENV NG_VERSION=$NG_VERSION
+WORKDIR /opt
+RUN touch $ARG_FILE
+
+root@smilove:/rebrain# docker build -t nginx:rbm-dkr-10 .
+Sending build context to Docker daemon  2.048kB
+Step 1/7 : ARG NG_VERSION=stable
+Step 2/7 : FROM nginx:$NG_VERSION
+ ---> 2ad6b739fe1c
+Step 3/7 : ARG NG_VERSION
+ ---> Running in 12d7670dadd4
+Removing intermediate container 12d7670dadd4
+ ---> 49676b150f40
+Step 4/7 : ARG ARG_FILE=ready_steady_go
+ ---> Running in 0403cacb181a
+Removing intermediate container 0403cacb181a
+ ---> ddf40fe9c660
+Step 5/7 : ENV NG_VERSION=$NG_VERSION
+ ---> Running in 1422512a22ce
+Removing intermediate container 1422512a22ce
+ ---> 2b5e11c6773a
+Step 6/7 : WORKDIR /opt
+ ---> Running in 57d5a0d9f5c2
+Removing intermediate container 57d5a0d9f5c2
+ ---> 592a8ad5a6a4
+Step 7/7 : RUN touch $ARG_FILE
+ ---> Running in 1363bec3053b
+Removing intermediate container 1363bec3053b
+ ---> 36f8479f3ca6
+Successfully built 36f8479f3ca6
+Successfully tagged nginx:rbm-dkr-10
+root@smilove:/rebrain# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx               rbm-dkr-10          36f8479f3ca6        11 seconds ago      132MB
+nginx               rbm-dkr-07          ea1819c829a5        5 weeks ago         21.8MB
+nginx               stable-alpine       ea1819c829a5        5 weeks ago         21.8MB
+nginx               latest              7e4d58f0e5f3        2 months ago        133MB
+nginx               stable              2ad6b739fe1c    
+root@smilove:/rebrain# docker run -d --name rbm-dkr-10 --env REBRAINME=DKR10 nginx:rbm-dkr-10
+123b8b598bc7594ba6efb7b03df42ad562f7ccb16c45f096a7f56b703c3a99b4
+root@smilove:/rebrain# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+123b8b598bc7        nginx:rbm-dkr-10    "/docker-entrypoint.…"   20 seconds ago      Up 19 seconds       80/tcp              rbm-dkr-10
+root@smilove:/rebrain# docker exec rbm-dkr-10 bash -c 'echo $REBRAINME'
+DKR10
+root@smilove:/rebrain# docker exec rbm-dkr-10 env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=123b8b598bc7
+REBRAINME=DKR10
+NGINX_VERSION=1.18.0
+NJS_VERSION=0.4.2
+PKG_RELEASE=1~buster
+NG_VERSION=stable
+HOME=/root
+root@smilove:/rebrain# docker exec rbm-dkr-10 bash -c ls -la
+ready_steady_go
+root@smilove:/rebrain#
+
+
+
+
