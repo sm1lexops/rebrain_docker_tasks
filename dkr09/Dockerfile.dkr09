@@ -1,0 +1,12 @@
+FROM ubuntu:18.04
+LABEL maintener=smiledevops@gmail.com
+RUN apt-get update -y && \
+apt-get install nginx -y
+WORKDIR /etc/nginx
+RUN groupadd --gid 2000 nginx \
+&& useradd --uid 2000 --gid nginx --shell /bin/bash --create-home nginx
+COPY nginx.conf /etc/nginx/
+ENTRYPOINT ["/usr/sbin/nginx"]
+CMD ["-g", "daemon off;"]
+VOLUME /mnt /var/lib/nginx
+
