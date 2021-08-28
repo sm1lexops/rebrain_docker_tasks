@@ -1,0 +1,8 @@
+[root@smilove rebrain]# docker run -d --name rbm-dkr-04 -v /rebrain/:/etc/nginx/ --mount type=volume,source=rbm-dkr-04,destination=/var/log/nginx/ -p 127.0.0.1:8891:80/tcp nginx:stable 
+ae9da78b98fa2c365bddc4206b7c484662eacfffea6acf7b4007a36dc0bc1abc
+[root@smilove rebrain]# docker ps -a 
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES ae9da78b98fa nginx:stable "/docker-entrypoint.…" 5 seconds ago Up 4 seconds 127.0.0.1:8891->80/tcp rbm-dkr-04 
+[root@smilove rebrain]# docker volume create inspect ls prune rm
+[root@smilove rebrain]# docker volume ls DRIVER VOLUME NAME local rbm-dkr-04 
+[root@smilove rebrain]# ls -la /var/lib/docker/volumes/rbm-dkr-04/data/ total 8 drwxr-xr-x. 2 root root 4096 Sep 16 22:19 . drwxr-xr-x. 3 root root 4096 Sep 16 22:07 .. lrwxrwxrwx. 1 root root 11 Sep 10 15:34 access.log -> /dev/stdout lrwxrwxrwx. 1 root root 11 Sep 10 15:34 error.log -> /dev/stderr 
+[root@smilove rebrain]#
