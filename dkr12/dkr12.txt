@@ -1,0 +1,68 @@
+htosti@ubuntu:~$ docker pull nginx:stable-alpine
+stable-alpine: Pulling from library/nginx
+540db60ca938: Pull complete
+b824a2584ece: Pull complete
+82d0e0426b2d: Pull complete
+ed76aa154407: Pull complete
+ef4cf5a20f8a: Pull complete
+9d3441de5d5e: Pull complete
+Digest: sha256:4c945e23f40334b2f0e8d6e5040a0ea06fc5c2e0cb355d1af0ae8ba0cdf80ea8
+Status: Downloaded newer image for nginx:stable-alpine
+docker.io/library/nginx:stable-alpine
+htosti@ubuntu:~$ docker tag nginx:stable-alpine nginx:rbm-dkr-12
+htosti@ubuntu:~$ docker images
+REPOSITORY   TAG             IMAGE ID       CREATED       SIZE
+nginx        rbm-dkr-12      e1ccef1fb908   12 days ago   22.6MB
+nginx        stable-alpine   e1ccef1fb908   12 days ago   22.6MB
+htosti@ubuntu:~$ docker rmi nginx:stable-alpine
+Untagged: nginx:stable-alpine
+htosti@ubuntu:~$ docker images
+REPOSITORY   TAG          IMAGE ID       CREATED       SIZE
+nginx        rbm-dkr-12   e1ccef1fb908   12 days ago   22.6MB
+htosti@ubuntu:~$ docker pull nginx:stable-alpine
+stable-alpine: Pulling from library/nginx
+Digest: sha256:4c945e23f40334b2f0e8d6e5040a0ea06fc5c2e0cb355d1af0ae8ba0cdf80ea8
+Status: Downloaded newer image for nginx:stable-alpine
+docker.io/library/nginx:stable-alpine
+htosti@ubuntu:~$ docker images
+REPOSITORY   TAG             IMAGE ID       CREATED       SIZE
+nginx        rbm-dkr-12      e1ccef1fb908   12 days ago   22.6MB
+nginx        stable-alpine   e1ccef1fb908   12 days ago   22.6MB
+htosti@ubuntu:~$ docker rmi -f $(docker images | grep "nginx" | awk "{print \$3}")
+Untagged: nginx:rbm-dkr-12
+Untagged: nginx:stable-alpine
+Untagged: nginx@sha256:4c945e23f40334b2f0e8d6e5040a0ea06fc5c2e0cb355d1af0ae8ba0cdf80ea8
+Deleted: sha256:e1ccef1fb90882f58e717d386a431ee0d5d8bb1ac2ee51ece569f96e861d8f0a
+Deleted: sha256:361c3b3ef408fc556bbe61c8c90676d6a086526ce19d21f5631c34b7033ba961
+Deleted: sha256:8a2a7a7f264c61ab218e207f7ebf90edc6621d504299d2b50b7ac35ed4062e07
+Deleted: sha256:74b27e284394240a7d7fef7c622de81c4d8cae64c2e4c3de790e62307311d291
+Deleted: sha256:9f48bdc990bcb364f5b7d936a8fe2adcc8e336f4a9a2a6fef13871a80aad40fb
+Deleted: sha256:0a5e90a1e6c5cc0ca22e77214ab1c918014a2a243efdc7ec788dbcddcf9c6508
+Deleted: sha256:b2d5eeeaba3a22b9b8aa97261957974a6bd65274ebd43e1d81d0a7b8b752b116
+htosti@ubuntu:~$ docker run -d --name rbm-dkr-12 nginx:stable-alpine
+Unable to find image 'nginx:stable-alpine' locally
+stable-alpine: Pulling from library/nginx
+540db60ca938: Pull complete
+b824a2584ece: Pull complete
+82d0e0426b2d: Pull complete
+ed76aa154407: Pull complete
+ef4cf5a20f8a: Pull complete
+9d3441de5d5e: Pull complete
+Digest: sha256:4c945e23f40334b2f0e8d6e5040a0ea06fc5c2e0cb355d1af0ae8ba0cdf80ea8
+Status: Downloaded newer image for nginx:stable-alpine
+a737dadb77cf476159d6e5cfe1a65ab1db80d309716bde8c1e9d26667e7dd5e7
+htosti@ubuntu:~$ docker rmi nginx:stable-alpine
+Error response from daemon: conflict: unable to remove repository reference "nginx:stable-alpine" (must force) - container a737dadb77cf is using its referenced image e1ccef1fb908
+htosti@ubuntu:~$ docker rmi --force nginx:stable-alpine
+Untagged: nginx:stable-alpine
+Untagged: nginx@sha256:4c945e23f40334b2f0e8d6e5040a0ea06fc5c2e0cb355d1af0ae8ba0cdf80ea8
+htosti@ubuntu:~$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS              PORTS     NAMES
+a737dadb77cf   e1ccef1fb908   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp    rbm-dkr-12
+htosti@ubuntu:~$ docker restart rbm-dkr-12
+rbm-dkr-12
+htosti@ubuntu:~$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS         PORTS     NAMES
+a737dadb77cf   e1ccef1fb908   "/docker-entrypoint.…"   About a minute ago   Up 8 seconds   80/tcp    rbm-dkr-12
+htosti@ubuntu:~$
+
