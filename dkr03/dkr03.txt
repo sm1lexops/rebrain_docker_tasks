@@ -1,0 +1,15 @@
+[root@smilove rebrain]# docker run -d --name rbm-dkr-02 -v /rebrain/:/usr/share/nginx/html -p 127.0.0.1:8889:80/tcp nginx:stable
+ce00247977296440daeb4e5ea2dee608cf9acc4add4805dbfe42069e3c2b018c
+[root@smilove rebrain]# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+ce0024797729        nginx:stable        "/docker-entrypoint.…"   3 minutes ago       Up 3 minutes        127.0.0.1:8889->80/tcp   rbm-dkr-02
+[root@smilove rebrain]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+ce0024797729        nginx:stable        "/docker-entrypoint.…"   3 minutes ago       Up 3 minutes        127.0.0.1:8889->80/tcp   rbm-dkr-02
+[root@smilove rebrain]# docker exec -ti rbm-dkr-02 md5sum /etc/nginx/nginx.conf
+f7984934bd6cab883e1f33d5129834bb  /etc/nginx/nginx.conf
+[root@smilove rebrain]# docker rm -f rbm-dkr-02 
+rbm-dkr-02
+[root@smilove rebrain]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[root@smilove rebrain]# 
