@@ -1,0 +1,3 @@
+FROM nginx:stable
+LABEL maintener=smiledevops@gmail.com
+COPY nginx.conf /etc/nginx/

@@ -1,0 +1,28 @@
+[root@5otd app]# docker build -t nginx:rbm-dkr-08 .
+Sending build context to Docker daemon  3.584kB
+Step 1/3 : FROM nginx:stable
+ ---> b5390718bd8e
+Step 2/3 : LABEL maintener=smiledevops@gmail.com
+ ---> Running in fec7bc1a4be9
+Removing intermediate container fec7bc1a4be9
+ ---> e70b9f2fbc6f
+Step 3/3 : COPY nginx.conf /etc/nginx/
+ ---> ca3ac712cd2d
+Successfully built ca3ac712cd2d
+Successfully tagged nginx:rbm-dkr-08
+[root@5otd app]# docker run -d --name rbm-dkr-08 -p 127.0.0.1:8900:80 nginx:rbm-dkr-08 
+c7e6a57f004a801950f7e09618a838b654b436a3705057bf3186b8f712a1045e
+[root@5otd app]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+c7e6a57f004a        nginx:rbm-dkr-08    "/docker-entrypoint.…"   30 seconds ago      Up 28 seconds       127.0.0.1:8900->80/tcp   rbm-dkr-08
+[root@5otd app]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+nginx               rbm-dkr-08          ca3ac712cd2d        About a minute ago   133MB
+nginx               stable              b5390718bd8e        5 days ago           133MB
+nginx               latest              f35646e83998        5 days ago           133MB
+ubuntu              18.04               56def654ec22        3 weeks ago          63.2MB
+[root@5otd app]# cat Dockerfile 
+FROM nginx:stable
+LABEL maintener=smiledevops@gmail.com
+COPY nginx.conf /etc/nginx/
+[root@5otd app]#
