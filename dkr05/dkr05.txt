@@ -1,0 +1,34 @@
+22.09.2020 21:33
+root@smilove:~# docker run -d --name rbm-dkr-05-run-$(openssl rand -hex 10) nginx:stable 428091db62d563285ae8eef6d07915579ea81f0ac7f3b4f7f3f8fcb886a26a89
+
+root@smilove:~# docker run -d --name rbm-dkr-05-run-$(openssl rand -hex 10) nginx:stable
+
+d0dd2c4e23dbcc2bc677c360cb5dd31047abf9ad78d5bccd4b12961fb3e3761e
+
+root@smilove:~# docker run -d --name rbm-dkr-05-stop nginx:stable
+
+f1588e90341dae8a3164398214f788334184283bc8c81eba75851bef0ab568df
+
+root@smilove:~# docker stop rbm-dkr-05-stop
+
+rbm-dkr-05-stop
+
+root@smilove:~# docker ps -a
+
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES f1588e90341d nginx:stable "/docker-entrypoint.…" 3 minutes ago Exited (0) 11 seconds ago rbm-dkr-05-stop d0dd2c4e23db nginx:stable "/docker-entrypoint.…" 3 minutes ago Up 3 minutes 80/tcp rbm-dkr-05-run-b91cf2cd358bac670514 428091db62d5 nginx:stable "/docker-entrypoint.…" 3 minutes ago Up 3 minutes 80/tcp rbm-dkr-05-run-98a782a5484b025fcd33
+
+root@smilove:~# docker stop $(docker ps -aq)
+
+f1588e90341d d0dd2c4e23db 428091db62d5
+
+root@smilove:~# docker ps -a
+
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES f1588e90341d nginx:stable "/docker-entrypoint.…" 4 minutes ago Exited (0) About a minute ago rbm-dkr-05-stop d0dd2c4e23db nginx:stable "/docker-entrypoint.…" 5 minutes ago Exited (0) 14 seconds ago rbm-dkr-05-run-b91cf2cd358bac670514 428091db62d5 nginx:stable "/docker-entrypoint.…" 5 minutes ago Exited (0) 14 seconds ago rbm-dkr-05-run-98a782a5484b025fcd33
+
+root@smilove:~# docker rm $(docker ps -aq)
+
+f1588e90341d d0dd2c4e23db 428091db62d5
+
+root@smilove:~# docker ps -a
+
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES root@smilove:~#
