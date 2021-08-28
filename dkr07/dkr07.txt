@@ -1,0 +1,25 @@
+root@smilove:~# docker pull nginx:stable-alpine
+stable-alpine: Pulling from library/nginx
+cbdbe7a5bc2a: Pull complete 
+d1b1b4361acf: Pull complete 
+c6b64ab35715: Pull complete 
+1e19938642d0: Pull complete 
+4a9d7b4c22c3: Pull complete 
+Digest: sha256:65d1156930ec74f1a668636955a060c230a363eae6f51d2ed42b6c127f80dcc7
+Status: Downloaded newer image for nginx:stable-alpine
+docker.io/library/nginx:stable-alpine
+root@smilove:~# docker image tag nginx:stable-alpine nginx:rbm-dkr-07
+root@smilove:~# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx               rbm-dkr-07          ea1819c829a5        6 days ago          21.8MB
+nginx               stable-alpine       ea1819c829a5        6 days ago          21.8MB
+nginx               latest              7e4d58f0e5f3        4 weeks ago         133MB
+busybox             latest              6858809bf669        4 weeks ago         1.23MB
+nginx               stable              2ad6b739fe1c        2 months ago        132MB
+root@smilove:~# docker run -d nginx:rbm-dkr-07 
+17878f3336441e2a87a4e8df9835ed341392635a0340a0b58425310d51413fe8
+root@smilove:~# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+17878f333644        nginx:rbm-dkr-07    "/docker-entrypoint.…"   2 seconds ago       Up 2 seconds        80/tcp              musing_goodall
+root@smilove:~# 
+
