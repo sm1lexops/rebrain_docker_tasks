@@ -1,0 +1,41 @@
+[root@smilove docker]# docker run -d --name rbm-dkr-06-local -p 127.0.0.1:8892:80/tcp --log-driver local --log-opt max-size=10Mib nginx:stable 
+bf108b0c849b6c7eab2802082af1c6bded1f7fd7face0477a463ee17187623e1
+[root@smilove docker]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+bf108b0c849b        nginx:stable        "/docker-entrypoint.…"   2 minutes ago       Up 2 minutes        127.0.0.1:8892->80/tcp   rbm-dkr-06-local
+[root@smilove docker]# 
+[root@smilove docker]# cat /var/lib/docker/containers/bf108b0c849b6c7eab2802082af1c6bded1f7fd7face0477a463ee17187623e1/local-logs/container.log
+t
+stdout��ٟ�Ձ��`/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configurationt]
+stdoutӳ۟�Ձ��I/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/]i
+stdout郳��Ձ��U/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.shik
+stdout��ע�Ձ��W10-listen-on-ipv6-by-default.sh: Getting the checksum of /etc/nginx/conf.d/default.confkm
+stdout�儦�Ձ��Y10-listen-on-ipv6-by-default.sh: Enabled listen on IPv6 in /etc/nginx/conf.d/default.confme
+stdout壐��Ձ��Q/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sheU
+stdout��Ƨ�Ձ��A/docker-entrypoint.sh: Configuration complete; ready for start upUn
+stdout�����؁��Z172.17.0.1 - - [08/Oct/2020:13:16:45 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.69.1" "-"n[root@smilove docker]# 
+[root@smilove docker]# 
+[root@smilove docker]# docker run -d --name rbm-dkr-06-global -p 127.0.0.1:8893:80/tcp nginx:stable 
+56c2af7b29867392e798940564ff5c53e3aaed215b09fa0e2eee15ef9f357c78
+[root@smilove docker]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS                    NAMES
+56c2af7b2986        nginx:stable        "/docker-entrypoint.…"   6 seconds ago       Up 5 seconds               127.0.0.1:8893->80/tcp   rbm-dkr-06-global
+bf108b0c849b        nginx:stable        "/docker-entrypoint.…"   6 minutes ago       Exited (0) 2 minutes ago                            rbm-dkr-06-local
+[root@smilove docker]# curl --silent http://127.0.0.1:8893 > /dev/null
+[root@smilove docker]# cat /var/lib/docker/containers/56c2af7b29867392e798940564ff5c53e3aaed215b09fa0e2eee15ef9f357c78/local-logs/container.log 
+t
+stdout��Ì�ၞ�`/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configurationt]
+stdout��ƌ�ၞ�I/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/]i
+stdout�����ၞ�U/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.shik
+stdout�͛��ၞ�W10-listen-on-ipv6-by-default.sh: Getting the checksum of /etc/nginx/conf.d/default.confkm
+stdout��Œ�ၞ�Y10-listen-on-ipv6-by-default.sh: Enabled listen on IPv6 in /etc/nginx/conf.d/default.confme
+stdout��ʒ�ၞ�Q/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sheU
+stdout�����ၞ�A/docker-entrypoint.sh: Configuration complete; ready for start upUn
+stdout����ၞ�Z172.17.0.1 - - [08/Oct/2020:13:22:09 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.69.1" "-"n[root@smilove docker]# 
+[root@smilove docker]# docker stop $(docker ps -aq)
+56c2af7b2986
+bf108b0c849b
+[root@smilove docker]# docker rm -f $(docker ps -aq)
+56c2af7b2986
+bf108b0c849b
+[root@smilove docker]# 
