@@ -12,4 +12,7 @@ RUN  go mod init gocalc \
 FROM alpine:3.10.3 
 COPY --from=0 /go/src/gocalc  /dkr-15-gocalc
 VOLUME /dkr-15-gocalc
-
+# some change referenced by Mentor
+# add this change if fail
+# CMD [ "/main.go"]
+# and add in to RUN cat top_secret.txt 
