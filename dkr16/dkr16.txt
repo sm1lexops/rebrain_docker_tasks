@@ -1,0 +1,572 @@
+==================================================================================================================
+[smilove@localhost dkr-16-grafana]$ docker build -t grafana:app --target=final .
+Sending build context to Docker daemon  57.77MB
+Step 1/37 : FROM golang:1.12.9-stretch as gobuild
+1.12.9-stretch: Pulling from library/golang
+092586df9206: Pull complete 
+ef599477fae0: Pull complete 
+4530c6472b5d: Pull complete 
+d34d61487075: Pull complete 
+89c6ec31b9e9: Pull complete 
+e37857ebcafa: Pull complete 
+b0e29f6c7f0a: Pull complete 
+Digest: sha256:76b52857546f070cc3ac499accb27b8c411b10ff6d45c0b1da2a8aab7b61fe29
+Status: Downloaded newer image for golang:1.12.9-stretch
+ ---> 2c4a601e5da9
+Step 2/37 : WORKDIR $GOPATH/src/github.com/grafana/grafana
+ ---> Running in 15f1999f4735
+Removing intermediate container 15f1999f4735
+ ---> bdfb4d348322
+Step 3/37 : COPY go.mod go.sum ./
+ ---> 4a7c48b11e60
+Step 4/37 : COPY vendor vendor
+ ---> 699bee0ad415
+Step 5/37 : RUN go mod verify
+ ---> Running in b523749be654
+all modules verified
+Removing intermediate container b523749be654
+ ---> 433fa99ecc6f
+Step 6/37 : COPY pkg pkg
+ ---> 70f3e983078f
+Step 7/37 : COPY build.go build.go
+ ---> 69bb0d240b92
+Step 8/37 : COPY package.json package.json
+ ---> 0777bb96c931
+Step 9/37 : RUN go run build.go build
+ ---> Running in 1133fc0d80f9
+Version: 6.3.7, Linux Version: 6.3.7, Package Iteration: 1624210260
+rm -r ./bin/linux-amd64/grafana-server
+rm -r ./bin/linux-amd64/grafana-server.md5
+go version
+go version go1.12.9 linux/amd64
+Targeting linux/amd64
+go build -ldflags -w -X main.version=6.3.7 -X main.commit=unknown-dev -X main.buildstamp=1624210260 -X main.buildBranch=master -o ./bin/linux-amd64/grafana-server ./pkg/cmd/grafana-server
+rm -r ./bin/linux-amd64/grafana-cli
+rm -r ./bin/linux-amd64/grafana-cli.md5
+go version
+go version go1.12.9 linux/amd64
+Targeting linux/amd64
+go build -ldflags -w -X main.version=6.3.7 -X main.commit=unknown-dev -X main.buildstamp=1624210317 -X main.buildBranch=master -o ./bin/linux-amd64/grafana-cli ./pkg/cmd/grafana-cli
+Removing intermediate container 1133fc0d80f9
+ ---> 45c3c7a2d283
+Step 10/37 : FROM node:10.14.2 as nodebuild
+10.14.2: Pulling from library/node
+54f7e8ac135a: Pull complete 
+d6341e30912f: Pull complete 
+087a57faf949: Pull complete 
+5d71636fb824: Pull complete 
+0c1db9598990: Pull complete 
+89669bc2deb2: Pull complete 
+680b586c807d: Pull complete 
+16f1b885efe0: Pull complete 
+Digest: sha256:09dedfecd09e55b5b39ca9f04c40b1b70889a0b65d2de4d9d510d39b1a213c5f
+Status: Downloaded newer image for node:10.14.2
+ ---> 8a752d5af4ce
+Step 11/37 : WORKDIR /usr/src/app/
+ ---> Running in 4743ec4e172d
+Removing intermediate container 4743ec4e172d
+ ---> 8f02d4e01e0d
+Step 12/37 : COPY package.json yarn.lock ./
+ ---> ce0982d0077e
+Step 13/37 : COPY packages packages
+ ---> 607f34a457c5
+Step 14/37 : RUN yarn install --pure-lockfile --no-progress
+ ---> Running in c9eb56608d24
+yarn install v1.12.3
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+warning lerna > @lerna/bootstrap > @lerna/symlink-binary > @lerna/create-symlink > @zkochan/cmd-shim > mkdirp-promise@5.0.1: This package is broken and no longer maintained. 'mkdirp' itself supports promises now, please switch to that.
+[3/5] Fetching packages...
+info fsevents@1.2.9: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.9" is an optional dependency and failed compatibility check. Excluding it from installation.
+[4/5] Linking dependencies...
+warning " > react-use@9.0.0" has unmet peer dependency "keyboardjs@*".
+warning " > react-use@9.0.0" has unmet peer dependency "rebound@*".
+warning " > slate-prism@0.5.0" has incorrect peer dependency "slate@^0.32.0".
+warning "lerna > @lerna/version > @lerna/github-client > @octokit/rest > @octokit/plugin-request-log@1.0.4" has unmet peer dependency "@octokit/core@>=3".
+warning "workspace-aggregator-0643e05f-53b4-42de-ab77-a0a1a4282aa5 > @grafana/data > rollup-plugin-visualizer@0.9.2" has incorrect peer dependency "rollup@>=0.60.0 <1".
+[5/5] Building fresh packages...
+Done in 132.02s.
+Removing intermediate container c9eb56608d24
+ ---> a7b5871e9424
+Step 15/37 : COPY Gruntfile.js tsconfig.json tslint.json ./
+ ---> 8a66893f4bfc
+Step 16/37 : COPY public public
+ ---> 7b2c5cdf73f2
+Step 17/37 : COPY scripts scripts
+ ---> c6c77c12d30d
+Step 18/37 : COPY emails emails
+ ---> a8b826433816
+Step 19/37 : ENV NODE_ENV production
+ ---> Running in 158f3e363706
+Removing intermediate container 158f3e363706
+ ---> 83bf1d429345
+Step 20/37 : RUN ./node_modules/.bin/grunt build
+ ---> Running in 98cf19f426a8
+Version 6.3.7
+Running "clean:release" (clean) task
+>> 0 paths cleaned.
+
+Running "clean:build" (clean) task
+>> 0 paths cleaned.
+
+Running "phantomjs" task
+
+Running "copy:phantom_bin" (copy) task
+Copied 1 file
+
+Running "exec:webpack" (exec) task
+Starting type checking service...
+Using 1 worker with 2048MB memory limit
+>> Browserslist: caniuse-lite is outdated. Please run next command `yarn upgrade`
+Hash: 6a66acfcb9470a908f9b
+Version: webpack 4.29.6
+Time: 387654ms
+Built at: 06/20/2021 5:42:56 PM
+                                 Asset        Size  Chunks                    Chunk Names
+                   ../views/error.html    1.88 KiB          [emitted]         
+                   ../views/index.html    14.5 KiB          [emitted]         
+           app.6a66acfcb9470a908f9b.js    1.89 MiB       1  [emitted]  [big]  app
+       app.6a66acfcb9470a908f9b.js.map    4.93 MiB       1  [emitted]         app
+          dark.6a66acfcb9470a908f9b.js  1010 bytes       2  [emitted]         dark
+      dark.6a66acfcb9470a908f9b.js.map    4.45 KiB       2  [emitted]         dark
+       explore.6a66acfcb9470a908f9b.js    62.8 KiB       3  [emitted]         explore
+   explore.6a66acfcb9470a908f9b.js.map     207 KiB       3  [emitted]         explore
+ grafana.dark.6a66acfcb9470a908f9b.css     267 KiB       2  [emitted]  [big]  dark
+grafana.light.6a66acfcb9470a908f9b.css     267 KiB       4  [emitted]  [big]  light
+         light.6a66acfcb9470a908f9b.js  1010 bytes       4  [emitted]         light
+     light.6a66acfcb9470a908f9b.js.map    4.45 KiB       4  [emitted]         light
+        vendor.6a66acfcb9470a908f9b.js     3.7 MiB       0  [emitted]  [big]  vendor
+    vendor.6a66acfcb9470a908f9b.js.map    13.3 MiB       0  [emitted]         vendor
+Entrypoint app [big] = vendor.6a66acfcb9470a908f9b.js vendor.6a66acfcb9470a908f9b.js.map app.6a66acfcb9470a908f9b.js app.6a66acfcb9470a908f9b.js.map
+Entrypoint dark [big] = grafana.dark.6a66acfcb9470a908f9b.css dark.6a66acfcb9470a908f9b.js dark.6a66acfcb9470a908f9b.js.map
+Entrypoint light [big] = grafana.light.6a66acfcb9470a908f9b.css light.6a66acfcb9470a908f9b.js light.6a66acfcb9470a908f9b.js.map
+   [3] ./packages/grafana-ui/src/index.ts 106 bytes {1} [built]
+   [5] ./packages/grafana-data/src/index.ts 62 bytes {1} [built]
+   [6] ./public/app/core/core_module.ts 486 bytes {1} [built]
+   [7] ./public/app/core/config.ts 159 bytes {1} [built]
+   [9] ./public/app/core/app_events.ts 107 bytes {1} [built]
+  [14] ./packages/grafana-runtime/src/index.ts + 7 modules 3.22 KiB {1} [built]
+       | ./packages/grafana-runtime/src/index.ts 112 bytes [built]
+       | ./packages/grafana-runtime/src/services/index.ts 127 bytes [built]
+       | ./packages/grafana-runtime/src/config.ts 2.02 KiB [built]
+       | ./packages/grafana-runtime/src/utils/plugin.ts 332 bytes [built]
+       | ./packages/grafana-runtime/src/services/backendSrv.ts 167 bytes [built]
+       | ./packages/grafana-runtime/src/services/AngularLoader.ts 132 bytes [built]
+       | ./packages/grafana-runtime/src/services/dataSourceSrv.ts 173 bytes [built]
+       | ./packages/grafana-runtime/src/services/LocationSrv.ts 169 bytes [built]
+  [19] ./public/app/core/core.ts + 81 modules 276 KiB {1} [built]
+       | ./public/app/core/core.ts 2.85 KiB [built]
+       | ./public/app/core/directives/dropdown_typeahead.ts 8.64 KiB [built]
+       | ./public/app/core/directives/autofill_event_fix.ts 1.22 KiB [built]
+       | ./public/app/core/directives/metric_segment.ts 9.35 KiB [built]
+       | ./public/app/core/directives/misc.ts 6.57 KiB [built]
+       | ./public/app/core/directives/ng_model_on_blur.ts 1.68 KiB [built]
+       | ./public/app/core/directives/tags.ts 3.54 KiB [built]
+       | ./public/app/core/directives/value_select_dropdown.ts 9.82 KiB [built]
+       | ./public/app/core/directives/rebuild_on_change.ts 2.21 KiB [built]
+       | ./public/app/core/directives/give_focus.ts 699 bytes [built]
+       | ./public/app/core/directives/diff-view.ts 2.19 KiB [built]
+       | ./public/app/core/jquery_extended.ts 1.45 KiB [built]
+       | ./public/app/core/services/search_srv.ts 7.71 KiB [built]
+       | ./public/app/core/services/ng_react.ts 11.7 KiB [built]
+       | ./public/app/core/directives/array_join.ts 737 bytes [built]
+       |     + 67 hidden modules
+  [22] ./public/app/core/utils/kbn.ts 8.45 KiB {1} [built]
+  [66] ./public/app/features/plugins/plugin_loader.ts + 240 modules 1.33 MiB {1} [built]
+       | ./public/app/features/plugins/plugin_loader.ts 7.42 KiB [built]
+       | ./public/app/plugins/sdk.ts 381 bytes [built]
+       | ./public/app/core/utils/flatten.ts 1.03 KiB [built]
+       | ./public/app/features/plugins/built_in_plugins.ts 4.39 KiB [built]
+       | ./public/app/features/dashboard/dashgrid/PanelPluginNotFound.tsx 1.9 KiB [built]
+       | ./public/app/features/panel/panel_ctrl.ts 8.19 KiB [built]
+       | ./public/app/features/panel/metrics_panel_ctrl.ts 9.03 KiB [built]
+       | ./public/app/plugins/datasource/graphite/module.ts 501 bytes [built]
+       | ./public/app/plugins/datasource/cloudwatch/module.ts 616 bytes [built]
+       | ./public/app/plugins/datasource/elasticsearch/module.ts 763 bytes [built]
+       | ./public/app/plugins/datasource/opentsdb/module.ts 485 bytes [built]
+       | ./public/app/plugins/datasource/grafana/module.ts 1.05 KiB [built]
+       | ./public/app/plugins/datasource/influxdb/module.ts 1.42 KiB [built]
+       | ./public/app/plugins/datasource/loki/module.ts 576 bytes [built]
+       | ./public/app/plugins/datasource/mixed/module.ts 107 bytes [built]
+       |     + 226 hidden modules
+[1052] ./public/vendor/bootstrap/bootstrap.js 40 KiB {1} [built]
+[1053] ./public/vendor/angular-other/angular-strap.js 6.38 KiB {1} [built]
+[1540] ./public/app sync extensions\/index.ts 160 bytes {1} [built]
+[1541] ./public/sass/grafana.dark.scss 39 bytes {2} [built]
+[1542] ./public/sass/grafana.light.scss 39 bytes {4} [built]
+[1545] ./public/app/index.ts + 127 modules 329 KiB {1} [built]
+       | ./public/app/index.ts 37 bytes [built]
+       | ./public/app/app.ts 5.17 KiB [built]
+       | ./public/app/core/utils/scrollbar.ts 1.24 KiB [built]
+       | ./public/app/routes/routes.ts 13.2 KiB [built]
+       | ./public/app/routes/GrafanaCtrl.ts 9.58 KiB [built]
+       | ./public/app/features/all.ts 462 bytes [built]
+       | ./public/app/routes/dashboard_loaders.ts 2.98 KiB [built]
+       | ./public/app/routes/ReactContainer.tsx 1.86 KiB [built]
+       | ./public/app/routes/registry.ts 706 bytes [built]
+       | ./public/app/features/folders/CreateFolderCtrl.ts 1.4 KiB [built]
+       | ./public/app/features/folders/FolderDashboardsCtrl.ts 893 bytes [built]
+       | ./public/app/features/manage-dashboards/DashboardImportCtrl.ts 7.66 KiB [built]
+       | ./public/app/core/services/AngularLoader.ts 1.22 KiB [built]
+       | ./public/app/store/configureStore.ts 3.59 KiB [built]
+       | ./public/app/features/templating/all.ts 756 bytes [built]
+       |     + 113 hidden modules
+    + 1696 hidden modules
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  vendor.6a66acfcb9470a908f9b.js (3.7 MiB)
+  app.6a66acfcb9470a908f9b.js (1.89 MiB)
+  grafana.dark.6a66acfcb9470a908f9b.css (267 KiB)
+  grafana.light.6a66acfcb9470a908f9b.css (267 KiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (5.59 MiB)
+      vendor.6a66acfcb9470a908f9b.js
+      app.6a66acfcb9470a908f9b.js
+  dark (268 KiB)
+      grafana.dark.6a66acfcb9470a908f9b.css
+      dark.6a66acfcb9470a908f9b.js
+  light (268 KiB)
+      grafana.light.6a66acfcb9470a908f9b.css
+      light.6a66acfcb9470a908f9b.js
+
+
+Done.
+Removing intermediate container 98cf19f426a8
+ ---> ee0b84c8529d
+Step 21/37 : FROM ubuntu:18.04 as final
+18.04: Pulling from library/ubuntu
+25fa05cd42bd: Pull complete 
+Digest: sha256:139b3846cee2e63de9ced83cee7023a2d95763ee2573e5b0ab6dea9dfbd4db8f
+Status: Downloaded newer image for ubuntu:18.04
+ ---> 7d0d8fa37224
+Step 22/37 : LABEL maintainer="Grafana team <hello@grafana.com>"
+ ---> Running in 60d6334490d0
+Removing intermediate container 60d6334490d0
+ ---> c4bc4a038257
+Step 23/37 : ARG GF_UID="472"
+ ---> Running in 1f58de3ee2da
+Removing intermediate container 1f58de3ee2da
+ ---> 36b17b83d09e
+Step 24/37 : ARG GF_GID="472"
+ ---> Running in 0735e91e3482
+Removing intermediate container 0735e91e3482
+ ---> b7e513607814
+Step 25/37 : ENV PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin     GF_PATHS_CONFIG="/etc/grafana/grafana.ini"     GF_PATHS_DATA="/var/lib/grafana"     GF_PATHS_HOME="/usr/share/grafana"     GF_PATHS_LOGS="/var/log/grafana"     GF_PATHS_PLUGINS="/var/lib/grafana/plugins"     GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
+ ---> Running in 0dc61b2ec0f9
+Removing intermediate container 0dc61b2ec0f9
+ ---> c5f7b99e8e24
+Step 26/37 : WORKDIR $GF_PATHS_HOME
+ ---> Running in 63a186a8643b
+Removing intermediate container 63a186a8643b
+ ---> bdd70d5b1332
+Step 27/37 : RUN apt-get update && apt-get upgrade -y &&     apt-get install -qq -y libfontconfig1 ca-certificates &&     apt-get autoremove -y &&     rm -rf /var/lib/apt/lists/*
+ ---> Running in 6a4ceb40d611
+Get:1 http://archive.ubuntu.com/ubuntu bionic InRelease [242 kB]
+Get:2 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
+Get:3 http://archive.ubuntu.com/ubuntu bionic-updates InRelease [88.7 kB]
+Get:4 http://archive.ubuntu.com/ubuntu bionic-backports InRelease [74.6 kB]
+Get:5 http://archive.ubuntu.com/ubuntu bionic/multiverse amd64 Packages [186 kB]
+Get:6 http://archive.ubuntu.com/ubuntu bionic/main amd64 Packages [1344 kB]
+Get:7 http://archive.ubuntu.com/ubuntu bionic/restricted amd64 Packages [13.5 kB]
+Get:8 http://archive.ubuntu.com/ubuntu bionic/universe amd64 Packages [11.3 MB]
+Get:9 http://security.ubuntu.com/ubuntu bionic-security/main amd64 Packages [2185 kB]
+Get:10 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 Packages [2185 kB]
+Get:11 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages [2619 kB]
+Get:12 http://security.ubuntu.com/ubuntu bionic-security/universe amd64 Packages [1415 kB]
+Get:13 http://archive.ubuntu.com/ubuntu bionic-updates/restricted amd64 Packages [481 kB]
+Get:14 http://archive.ubuntu.com/ubuntu bionic-updates/multiverse amd64 Packages [33.5 kB]
+Get:15 http://archive.ubuntu.com/ubuntu bionic-backports/universe amd64 Packages [11.4 kB]
+Get:16 http://archive.ubuntu.com/ubuntu bionic-backports/main amd64 Packages [11.3 kB]
+Get:17 http://security.ubuntu.com/ubuntu bionic-security/restricted amd64 Packages [450 kB]
+Get:18 http://security.ubuntu.com/ubuntu bionic-security/multiverse amd64 Packages [24.7 kB]
+Fetched 22.8 MB in 4s (6326 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+The following packages will be upgraded:
+  libhogweed4 libnettle6 libsystemd0 libudev1
+4 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Need to get 517 kB of archives.
+After this operation, 12.3 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 libsystemd0 amd64 237-3ubuntu10.48 [209 kB]
+Get:2 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 libudev1 amd64 237-3ubuntu10.48 [58.0 kB]
+Get:3 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 libnettle6 amd64 3.4.1-0ubuntu0.18.04.1 [111 kB]
+Get:4 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 libhogweed4 amd64 3.4.1-0ubuntu0.18.04.1 [140 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 517 kB in 0s (1315 kB/s)
+(Reading database ... 4051 files and directories currently installed.)
+Preparing to unpack .../libsystemd0_237-3ubuntu10.48_amd64.deb ...
+Unpacking libsystemd0:amd64 (237-3ubuntu10.48) over (237-3ubuntu10.47) ...
+Setting up libsystemd0:amd64 (237-3ubuntu10.48) ...
+(Reading database ... 4051 files and directories currently installed.)
+Preparing to unpack .../libudev1_237-3ubuntu10.48_amd64.deb ...
+Unpacking libudev1:amd64 (237-3ubuntu10.48) over (237-3ubuntu10.47) ...
+Setting up libudev1:amd64 (237-3ubuntu10.48) ...
+(Reading database ... 4051 files and directories currently installed.)
+Preparing to unpack .../libnettle6_3.4.1-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking libnettle6:amd64 (3.4.1-0ubuntu0.18.04.1) over (3.4-1ubuntu0.1) ...
+Setting up libnettle6:amd64 (3.4.1-0ubuntu0.18.04.1) ...
+(Reading database ... 4051 files and directories currently installed.)
+Preparing to unpack .../libhogweed4_3.4.1-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking libhogweed4:amd64 (3.4.1-0ubuntu0.18.04.1) over (3.4-1ubuntu0.1) ...
+Setting up libhogweed4:amd64 (3.4.1-0ubuntu0.18.04.1) ...
+Processing triggers for libc-bin (2.27-3ubuntu1.4) ...
+debconf: delaying package configuration, since apt-utils is not installed
+Selecting previously unselected package libssl1.1:amd64.
+(Reading database ... 4051 files and directories currently installed.)
+Preparing to unpack .../0-libssl1.1_1.1.1-1ubuntu2.1~18.04.9_amd64.deb ...
+Unpacking libssl1.1:amd64 (1.1.1-1ubuntu2.1~18.04.9) ...
+Selecting previously unselected package openssl.
+Preparing to unpack .../1-openssl_1.1.1-1ubuntu2.1~18.04.9_amd64.deb ...
+Unpacking openssl (1.1.1-1ubuntu2.1~18.04.9) ...
+Selecting previously unselected package ca-certificates.
+Preparing to unpack .../2-ca-certificates_20210119~18.04.1_all.deb ...
+Unpacking ca-certificates (20210119~18.04.1) ...
+Selecting previously unselected package libexpat1:amd64.
+Preparing to unpack .../3-libexpat1_2.2.5-3ubuntu0.2_amd64.deb ...
+Unpacking libexpat1:amd64 (2.2.5-3ubuntu0.2) ...
+Selecting previously unselected package ucf.
+Preparing to unpack .../4-ucf_3.0038_all.deb ...
+Moving old data out of the way
+Unpacking ucf (3.0038) ...
+Selecting previously unselected package libpng16-16:amd64.
+Preparing to unpack .../5-libpng16-16_1.6.34-1ubuntu0.18.04.2_amd64.deb ...
+Unpacking libpng16-16:amd64 (1.6.34-1ubuntu0.18.04.2) ...
+Selecting previously unselected package fonts-dejavu-core.
+Preparing to unpack .../6-fonts-dejavu-core_2.37-1_all.deb ...
+Unpacking fonts-dejavu-core (2.37-1) ...
+Selecting previously unselected package fontconfig-config.
+Preparing to unpack .../7-fontconfig-config_2.12.6-0ubuntu2_all.deb ...
+Unpacking fontconfig-config (2.12.6-0ubuntu2) ...
+Selecting previously unselected package libfreetype6:amd64.
+Preparing to unpack .../8-libfreetype6_2.8.1-2ubuntu2.1_amd64.deb ...
+Unpacking libfreetype6:amd64 (2.8.1-2ubuntu2.1) ...
+Selecting previously unselected package libfontconfig1:amd64.
+Preparing to unpack .../9-libfontconfig1_2.12.6-0ubuntu2_amd64.deb ...
+Unpacking libfontconfig1:amd64 (2.12.6-0ubuntu2) ...
+Setting up libexpat1:amd64 (2.2.5-3ubuntu0.2) ...
+Setting up libpng16-16:amd64 (1.6.34-1ubuntu0.18.04.2) ...
+Setting up fonts-dejavu-core (2.37-1) ...
+Setting up ucf (3.0038) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.26.1 /usr/local/share/perl/5.26.1 /usr/lib/x86_64-linux-gnu/perl5/5.26 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl/5.26 /usr/share/perl/5.26 /usr/local/lib/site_perl /usr/lib/x86_64-linux-gnu/perl-base) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
+debconf: falling back to frontend: Teletype
+Setting up libfreetype6:amd64 (2.8.1-2ubuntu2.1) ...
+Setting up libssl1.1:amd64 (1.1.1-1ubuntu2.1~18.04.9) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.26.1 /usr/local/share/perl/5.26.1 /usr/lib/x86_64-linux-gnu/perl5/5.26 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl/5.26 /usr/share/perl/5.26 /usr/local/lib/site_perl /usr/lib/x86_64-linux-gnu/perl-base) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
+debconf: falling back to frontend: Teletype
+Setting up openssl (1.1.1-1ubuntu2.1~18.04.9) ...
+Setting up ca-certificates (20210119~18.04.1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.26.1 /usr/local/share/perl/5.26.1 /usr/lib/x86_64-linux-gnu/perl5/5.26 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl/5.26 /usr/share/perl/5.26 /usr/local/lib/site_perl /usr/lib/x86_64-linux-gnu/perl-base) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
+debconf: falling back to frontend: Teletype
+Updating certificates in /etc/ssl/certs...
+129 added, 0 removed; done.
+Setting up fontconfig-config (2.12.6-0ubuntu2) ...
+Setting up libfontconfig1:amd64 (2.12.6-0ubuntu2) ...
+Processing triggers for libc-bin (2.27-3ubuntu1.4) ...
+Processing triggers for ca-certificates (20210119~18.04.1) ...
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+Reading package lists...
+Building dependency tree...
+Reading state information...
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Removing intermediate container 6a4ceb40d611
+ ---> 3bb97dc09f6c
+Step 28/37 : COPY conf ./conf
+ ---> 188c35b6f0d9
+Step 29/37 : RUN mkdir -p "$GF_PATHS_HOME/.aws" &&     groupadd -r -g $GF_GID grafana &&     useradd -r -u $GF_UID -g grafana grafana &&     mkdir -p "$GF_PATHS_PROVISIONING/datasources"              "$GF_PATHS_PROVISIONING/dashboards"              "$GF_PATHS_PROVISIONING/notifiers"              "$GF_PATHS_LOGS"              "$GF_PATHS_PLUGINS"              "$GF_PATHS_DATA" &&     cp "$GF_PATHS_HOME/conf/sample.ini" "$GF_PATHS_CONFIG" &&     cp "$GF_PATHS_HOME/conf/ldap.toml" /etc/grafana/ldap.toml &&     chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" &&     chmod 777 -R "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING"
+ ---> Running in 8ebbfbbbf1b1
+Removing intermediate container 8ebbfbbbf1b1
+ ---> fce25d85f4d0
+Step 30/37 : COPY --from=0 /go/src/github.com/grafana/grafana/bin/linux-amd64/grafana-server /go/src/github.com/grafana/grafana/bin/linux-amd64/grafana-cli ./bin/
+ ---> 3afab483ea3a
+Step 31/37 : COPY --from=1 /usr/src/app/public ./public
+ ---> 690a87b3d16c
+Step 32/37 : COPY --from=1 /usr/src/app/tools ./tools
+ ---> 09a3bbb16935
+Step 33/37 : COPY tools/phantomjs/render.js ./tools/phantomjs/render.js
+ ---> 3c07cfd2c920
+Step 34/37 : EXPOSE 3000
+ ---> Running in d752e736dd1d
+Removing intermediate container d752e736dd1d
+ ---> 8b7a3344dc21
+Step 35/37 : COPY ./packaging/docker/run.sh /run.sh
+ ---> 568e1d95eb21
+Step 36/37 : USER grafana
+ ---> Running in 36fa37491c0e
+Removing intermediate container 36fa37491c0e
+ ---> 47053cc6acec
+Step 37/37 : ENTRYPOINT [ "/run.sh" ]
+ ---> Running in e5314f0501a6
+Removing intermediate container e5314f0501a6
+ ---> 5f0bb69da351
+Successfully built 5f0bb69da351
+Successfully tagged grafana:app
+==========================================================================================================
+[smilove@localhost dkr-16-grafana]$ docker build -t grafana:static .
+Sending build context to Docker daemon  57.77MB
+Step 1/41 : FROM golang:1.12.9-stretch as gobuild
+ ---> 2c4a601e5da9
+Step 2/41 : WORKDIR $GOPATH/src/github.com/grafana/grafana
+ ---> Using cache
+ ---> bdfb4d348322
+Step 3/41 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 4a7c48b11e60
+Step 4/41 : COPY vendor vendor
+ ---> Using cache
+ ---> 699bee0ad415
+Step 5/41 : RUN go mod verify
+ ---> Using cache
+ ---> 433fa99ecc6f
+Step 6/41 : COPY pkg pkg
+ ---> Using cache
+ ---> 70f3e983078f
+Step 7/41 : COPY build.go build.go
+ ---> Using cache
+ ---> 69bb0d240b92
+Step 8/41 : COPY package.json package.json
+ ---> Using cache
+ ---> 0777bb96c931
+Step 9/41 : RUN go run build.go build
+ ---> Using cache
+ ---> 45c3c7a2d283
+Step 10/41 : FROM node:10.14.2 as nodebuild
+ ---> 8a752d5af4ce
+Step 11/41 : WORKDIR /usr/src/app/
+ ---> Using cache
+ ---> 8f02d4e01e0d
+Step 12/41 : COPY package.json yarn.lock ./
+ ---> Using cache
+ ---> ce0982d0077e
+Step 13/41 : COPY packages packages
+ ---> Using cache
+ ---> 607f34a457c5
+Step 14/41 : RUN yarn install --pure-lockfile --no-progress
+ ---> Using cache
+ ---> a7b5871e9424
+Step 15/41 : COPY Gruntfile.js tsconfig.json tslint.json ./
+ ---> Using cache
+ ---> 8a66893f4bfc
+Step 16/41 : COPY public public
+ ---> Using cache
+ ---> 7b2c5cdf73f2
+Step 17/41 : COPY scripts scripts
+ ---> Using cache
+ ---> c6c77c12d30d
+Step 18/41 : COPY emails emails
+ ---> Using cache
+ ---> a8b826433816
+Step 19/41 : ENV NODE_ENV production
+ ---> Using cache
+ ---> 83bf1d429345
+Step 20/41 : RUN ./node_modules/.bin/grunt build
+ ---> Using cache
+ ---> ee0b84c8529d
+Step 21/41 : FROM ubuntu:18.04 as final
+ ---> 7d0d8fa37224
+Step 22/41 : LABEL maintainer="Grafana team <hello@grafana.com>"
+ ---> Using cache
+ ---> c4bc4a038257
+Step 23/41 : ARG GF_UID="472"
+ ---> Using cache
+ ---> 36b17b83d09e
+Step 24/41 : ARG GF_GID="472"
+ ---> Using cache
+ ---> b7e513607814
+Step 25/41 : ENV PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin     GF_PATHS_CONFIG="/etc/grafana/grafana.ini"     GF_PATHS_DATA="/var/lib/grafana"     GF_PATHS_HOME="/usr/share/grafana"     GF_PATHS_LOGS="/var/log/grafana"     GF_PATHS_PLUGINS="/var/lib/grafana/plugins"     GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
+ ---> Using cache
+ ---> c5f7b99e8e24
+Step 26/41 : WORKDIR $GF_PATHS_HOME
+ ---> Using cache
+ ---> bdd70d5b1332
+Step 27/41 : RUN apt-get update && apt-get upgrade -y &&     apt-get install -qq -y libfontconfig1 ca-certificates &&     apt-get autoremove -y &&     rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 3bb97dc09f6c
+Step 28/41 : COPY conf ./conf
+ ---> Using cache
+ ---> 188c35b6f0d9
+Step 29/41 : RUN mkdir -p "$GF_PATHS_HOME/.aws" &&     groupadd -r -g $GF_GID grafana &&     useradd -r -u $GF_UID -g grafana grafana &&     mkdir -p "$GF_PATHS_PROVISIONING/datasources"              "$GF_PATHS_PROVISIONING/dashboards"              "$GF_PATHS_PROVISIONING/notifiers"              "$GF_PATHS_LOGS"              "$GF_PATHS_PLUGINS"              "$GF_PATHS_DATA" &&     cp "$GF_PATHS_HOME/conf/sample.ini" "$GF_PATHS_CONFIG" &&     cp "$GF_PATHS_HOME/conf/ldap.toml" /etc/grafana/ldap.toml &&     chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" &&     chmod 777 -R "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING"
+ ---> Using cache
+ ---> fce25d85f4d0
+Step 30/41 : COPY --from=0 /go/src/github.com/grafana/grafana/bin/linux-amd64/grafana-server /go/src/github.com/grafana/grafana/bin/linux-amd64/grafana-cli ./bin/
+ ---> Using cache
+ ---> 3afab483ea3a
+Step 31/41 : COPY --from=1 /usr/src/app/public ./public
+ ---> Using cache
+ ---> 690a87b3d16c
+Step 32/41 : COPY --from=1 /usr/src/app/tools ./tools
+ ---> Using cache
+ ---> 09a3bbb16935
+Step 33/41 : COPY tools/phantomjs/render.js ./tools/phantomjs/render.js
+ ---> Using cache
+ ---> 3c07cfd2c920
+Step 34/41 : EXPOSE 3000
+ ---> Using cache
+ ---> 8b7a3344dc21
+Step 35/41 : COPY ./packaging/docker/run.sh /run.sh
+ ---> Using cache
+ ---> 568e1d95eb21
+Step 36/41 : USER grafana
+ ---> Using cache
+ ---> 47053cc6acec
+Step 37/41 : ENTRYPOINT [ "/run.sh" ]
+ ---> Using cache
+ ---> 5f0bb69da351
+Step 38/41 : FROM nginx:alpine as web
+ ---> a6eb2a334a9f
+Step 39/41 : COPY --from=1 /usr/src/app/public ./usr/share/html/public
+ ---> 2a01c7efb464
+Step 40/41 : COPY nginx.conf ./etc/nginx/nginx.conf
+ ---> b28cf60cab6f
+Step 41/41 : COPY index.html ./usr/share/nginx/html/public/
+ ---> f2901d66ea65
+Successfully built f2901d66ea65
+Successfully tagged grafana:static
+
+====================================================================================================
+[smilove@localhost dkr-16-grafana]$ docker images
+REPOSITORY   TAG              IMAGE ID       CREATED              SIZE
+grafana      static           a736264dbe59   About a minute ago   57.9MB
+grafana      app              5f0bb69da351   3 minutes ago        246MB
+<none>       <none>           ee0b84c8529d   3 minutes ago        2.42GB
+<none>       <none>           45c3c7a2d283   14 minutes ago       998MB
+ubuntu       18.04            7d0d8fa37224   2 days ago           63.1MB
+nginx        alpine           a6eb2a334a9f   3 weeks ago          22.6MB
+nginx        latest           d1a364dc548d   3 weeks ago          133MB
+golang       1.12.9-stretch   2c4a601e5da9   21 months ago        774MB
+node         10.14.2          8a752d5af4ce   2 years ago          894MB
+=====================================================================================================
+[smilove@localhost dkr-16-grafana]$ docker ps
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+b64bd2a74ad4   grafana:static   "/docker-entrypoint.…"   3 seconds ago   Up 2 seconds   0.0.0.0:80->80/tcp, :::80->80/tcp           web
+eb1cfccb2b44   grafana:app      "/run.sh"                2 minutes ago   Up 2 minutes   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp   app
+=====================================================================================================
+[smilove@localhost dkr-16-grafana]$ docker exec -it web /bin/sh
+/ # cd /usr/share/html/public/
+app/         dashboards/  emails/      img/         test/        views/
+build/       e2e-test/    fonts/       sass/        vendor/
+
+
+
