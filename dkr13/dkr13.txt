@@ -1,0 +1,9 @@
+   16  docker build -t cache:1 .
+   17  docker build -t cache:2 .
+   18  docker build -t cache:2 . --no-cache
+   19  docker build --build-arg=3 -t cache:3 .
+   20  docker build --build-arg MYARG=3 -t cache:3 .
+   21  docker build --build-arg MYARG=4 -t cache:4 .
+   22  docker inspect cashe:4
+   23  docker inspect cache:4
+
