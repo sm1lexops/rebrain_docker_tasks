@@ -1,0 +1,56 @@
+# syntax=docker/dockerfile:1
+# v7 alonetone
+FROM ubuntu:20.04 as build 
+
+# Installing apt-get dependencies
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \ 
+curl libgdbm-dev libncurses5-dev automake libtool bison libffi-dev libyaml-dev libsndfile-dev lame libvips libvips-dev libtool git libssl-dev libreadline-dev libmysqlclient-dev 
+
+# Extra package
+#libexpat1-dev gettext libglib2.0-dev \
+#liborc-0.4-dev libfftw3-dev liblcms2-dev libmagickwand-dev \
+#libopenexr-dev libcfitsio-dev libgif-dev libgsf-1-dev \
+#libmatio-dev libopenslide-dev libpango1.0-dev libpoppler-glib-dev \
+#librsvg2-dev libwebp-dev
+#libpq-dev redis-server memcached imagemagick ffmpeg mupdf mupdf-tools \
+#libxml2-dev curl gnupg*
+
+# Install yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get -y install yarn && \
+rm -rf /var/lib/apt/lists/*
+
+# Install Ruby and Bundle from source
+#RUN curl -LO https://github.com/ruby/ruby-builder/releases/download/toolcache/ruby-2.7.2-ubuntu-20.04.tar.gz && \
+#mkdir -p /opt/hostedtoolcache/Ruby/2.7.2 && \
+#/usr/bin/tar -xzf ./ruby-2.7.2-ubuntu-20.04.tar.gz -C /opt/hostedtoolcache/Ruby/2.7.2/ 
+
+# Install rbenv ruby & ruby-build
+RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+RUN git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+RUN /root/.rbenv/plugins/ruby-build/install.sh
+ENV PATH /root/.rbenv/bin:$PATH
+RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+RUN echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+RUN echo 'export PATH="$HOME/.rbenv/shim:$PATH"' >> ~/.bashrc
+RUN exec $SHELL
+
+#RUN rbenv install 2.7.2 & bundler
+RUN ["/bin/sh", "-c", "rbenv install 2.7.2"]
+RUN ["/bin/sh", "-c", "rbenv global 2.7.2"]
+
+# Copy project alonetone and install bundler
+COPY . ./app
+WORKDIR /app
+ENV RAILS_ENV test
+RUN ["/root/.rbenv/shims/gem", "install", "bundler"]
+# Install yarn dependencies
+RUN yarn install --pure-lockfile
+#
+# Install ruby dependencies to development 
+RUN ["/root/.rbenv/shims/bundle", "install", "--deployment", "--jobs", "4"]
+CMD ["/root/.rbenv/shims/bundle", "exec", "rspec", "--exclude-pattern", "spec/features/**/*_spec.rb"]
+
+
+
