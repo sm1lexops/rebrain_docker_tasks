@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  postgres:
+    image: "postgres:10"
+    environment:
+      POSTGRES_PASSWORD: DatabasePassword
+      POSTGRES_USER: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      backend_net:
+
+  gocalc:
+    build: .
+    environment:
+      POSTGRES_URI: "postgres://postgres:DatabasePassword@postgres:5432/postgres?sslmode=disable"
+    depends_on:
+      - postgres
+    ports:
+      - "7000:7000"
+    restart: unless-stopped
+    networks:
+      frontend_net:
+      backend_net:
+  
+  nginx:
+    image: "nginx:stable"
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    restart: always
+    depends_on:
+      - gocalc
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - SETUID
+      - SETGID
+      - SETPCAP
+      - SETFCAP
+      - CHOWN
+      - DAC_OVERRIDE
+    networks:
+      frontend_net:
+
+volumes:
+  db_data:
+networks:
+  frontend_net:
+  backend_net:
+
